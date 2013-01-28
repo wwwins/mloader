@@ -73,6 +73,12 @@ Loads BitmapData from a defined url.
 */
 class ImageLoader extends LoaderBase<BitmapData>
 {
+	/**
+	Set to true if you want to checkPolicy file.
+	Default is false.
+	*/
+	public var checkPolicy:Bool;
+
 	var loader:flash.display.Loader;
 
 	public function new(?url:String)
@@ -100,7 +106,10 @@ class ImageLoader extends LoaderBase<BitmapData>
 			loaderComplete();
 		}
 		#else
-		loader.load(new flash.net.URLRequest(url));
+		if (checkPolicy && (flash.system.Security.sandboxType == flash.system.Security.REMOTE))
+			loader.load(new flash.net.URLRequest(url), new flash.system.LoaderContext(true, null, flash.system.SecurityDomain.currentDomain));
+		else
+			loader.load(new flash.net.URLRequest(url));
 		#end
 	}
 
@@ -143,6 +152,7 @@ class ImageLoader extends LoaderBase<Dynamic>
 	public function new(?url:String)
 	{
 		super(url);
+		checkPolicy = false;
 		
 		throw "mloader.ImageLoader is not implemented on this platform";
 	}
